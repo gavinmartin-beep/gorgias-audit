@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gorgias AI Agent Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Gorgias Primary Palette */
+    --coral:   #FF9780;
+    --rose:    #FFD2C9;
+    --ginger:  #FFEAE6;
+    --blush:   #FEF4F3;
+    --black:   #1A1E23;
+    --smoke:   #E8E3E1;
+    --fog:     #F3F1F0;
+    --white:   #FAFAFA;
+
+    /* AI Gradient stops */
+    --ai-start: #FF9780;
+    --ai-mid:   #DF8FF8;
+    --ai-end:   #7D19F0;
+
+    /* Secondary (status) */
+    --green-mid:  #289E43;
+    --green-pale: #E1FFE8;
+    --green-deep: #0A4622;
+    --orange-mid: #CD721D;
+    --orange-pale:#FFE8DB;
+    --red-mid:    #C54040;
+    --red-pale:   #FFEAEA;
+    --blue-mid:   #4E88FB;
+    --blue-pale:  #EAF1FF;
+    --violet-mid: #A175FF;
+    --violet-pale:#EDEAFF;
+
+    --radius: 8px;
+    --font: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--fog);
+    color: var(--black);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    letter-spacing: 0;
+  }
+
+  /* ── Header ─────────────────────────────────────────────────────────── */
+  header {
+    background: var(--black);
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Gorgias symbol SVG — inline */
+  .header-logo svg { width: 24px; height: 24px; }
+
+  .header-wordmark {
+    color: var(--white);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+
+  .header-product {
+    color: rgba(250,250,250,0.45);
+    font-size: 13px;
+    font-weight: 300;
+    margin-left: 4px;
+  }
+
+  .header-badge {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(250,250,250,0.5);
+    border: 1px solid rgba(250,250,250,0.15);
+    border-radius: 4px;
+    padding: 3px 8px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Hero strip ─────────────────────────────────────────────────────── */
+  .hero {
+    background: var(--black);
+    padding: 40px 40px 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .hero p {
+    color: rgba(250,250,250,0.5);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────────────────── */
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ── Card ───────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--smoke);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: rgba(26,30,35,0.45);
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--smoke);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  /* ── Form ───────────────────────────────────────────────────────────── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .two-col   { grid-template-columns: 1fr; }
+    header { padding: 0 20px; }
+    .hero  { padding: 28px 20px 32px; }
+    .container { padding: 20px 16px 48px; }
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(26,30,35,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  input {
+    width: 100%;
+    background: var(--fog);
+    border: 1px solid var(--smoke);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--black);
+    font-size: 14px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  input:focus {
+    border-color: var(--coral);
+    background: var(--white);
+  }
+
+  input::placeholder { color: rgba(26,30,35,0.3); }
+
+  .input-group { position: relative; }
+  .domain-suffix {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: rgba(26,30,35,0.35); font-size: 13px; pointer-events: none;
+  }
+
+  /* ── Button ─────────────────────────────────────────────────────────── */
+  .btn {
+    background: var(--coral);
+    color: var(--black);
+    border: none;
+    border-radius: 6px;
+    padding: 11px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    letter-spacing: -0.1px;
+  }
+
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); opacity: 1; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-row { display: flex; align-items: center; gap: 16px; }
+
+  /* ── Progress ───────────────────────────────────────────────────────── */
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--smoke);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ai-start), var(--ai-mid), var(--ai-end));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .status-text { font-size: 13px; color: rgba(26,30,35,0.45); min-height: 20px; }
+
+  /* ── Results ────────────────────────────────────────────────────────── */
+  #results { display: none; }
+
+  /* ── Score ──────────────────────────────────────────────────────────── */
+  .score-wrap {
+    display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
+  }
+
+  .score-ring {
+    position: relative; width: 96px; height: 96px; flex-shrink: 0;
+  }
+
+  .score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 7; }
+  .score-ring .bg { stroke: var(--smoke); }
+  .score-ring .fg {
+    stroke: var(--coral);
+    stroke-linecap: round;
+    stroke-dasharray: 270.18;
+    stroke-dashoffset: 270.18;
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    text-align: center;
+  }
+
+  .score-num {
+    font-size: 26px; font-weight: 700; color: var(--black);
+    display: block; line-height: 1; letter-spacing: -1px;
+  }
+
+  .score-of { font-size: 11px; color: rgba(26,30,35,0.4); font-weight: 400; }
+
+  .score-breakdown { flex: 1; min-width: 200px; }
+  .score-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid var(--fog); font-size: 13px;
+  }
+  .score-row:last-child { border-bottom: none; }
+  .score-pts { font-weight: 600; }
+  .score-pts.earned { color: var(--green-mid); }
+  .score-pts.zero   { color: rgba(26,30,35,0.3); }
+
+  /* ── Stats grid ─────────────────────────────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .stat-box {
+    background: var(--fog);
+    border: 1px solid var(--smoke);
+    border-radius: 6px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-size: 26px; font-weight: 700; color: var(--black);
+    letter-spacing: -1px; display: block; line-height: 1.2;
+  }
+
+  .stat-label { font-size: 11px; color: rgba(26,30,35,0.45); margin-top: 3px; font-weight: 500; }
+
+  /* ── Badges ─────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+
+  .badge.success { background: var(--green-pale); color: var(--green-deep); }
+  .badge.warning { background: var(--orange-pale); color: var(--orange-mid); }
+  .badge.danger  { background: var(--red-pale); color: var(--red-mid); }
+  .badge.info    { background: var(--blue-pale); color: var(--blue-mid); }
+  .badge.ai      { background: var(--ginger); color: var(--coral); }
+  .badge.neutral { background: var(--fog); color: rgba(26,30,35,0.5); border: 1px solid var(--smoke); }
+
+  /* ── Table ──────────────────────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; }
+
+  th {
+    text-align: left; font-size: 11px; color: rgba(26,30,35,0.4);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 8px 12px; border-bottom: 1px solid var(--smoke);
+    font-weight: 600; background: var(--fog);
+  }
+
+  th:first-child { border-radius: 4px 0 0 0; }
+  th:last-child  { border-radius: 0 4px 0 0; }
+
+  td {
+    padding: 10px 12px; border-bottom: 1px solid var(--fog);
+    font-size: 13px; vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--blush); }
+  tr.hl td { background: var(--ginger); }
+  tr.hl:hover td { background: var(--rose); }
+
+  /* ── Tag pills ──────────────────────────────────────────────────────── */
+  .tag-pill {
+    display: inline-block;
+    background: var(--fog);
+    border: 1px solid var(--smoke);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    margin: 2px;
+    color: rgba(26,30,35,0.6);
+  }
+
+  .tag-pill.ai-tag {
+    background: var(--ginger);
+    border-color: var(--rose);
+    color: var(--coral);
+    font-weight: 500;
+  }
+
+  /* ── KV list ────────────────────────────────────────────────────────── */
+  .kv-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .kv-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; padding-bottom: 12px; border-bottom: 1px solid var(--fog);
+  }
+
+  .kv-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .kv-key { color: rgba(26,30,35,0.5); font-weight: 400; }
+  .kv-val { font-weight: 500; text-align: right; }
+
+  /* ── Two-col ────────────────────────────────────────────────────────── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ── Section meta ───────────────────────────────────────────────────── */
+  .section-meta {
+    font-size: 12px; color: rgba(26,30,35,0.5);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+
+  .divider { height: 1px; background: var(--smoke); margin: 16px 0; }
+
+  /* ── Recommendations ────────────────────────────────────────────────── */
+  .rec-item {
+    display: flex; gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--fog);
+    align-items: flex-start;
+  }
+
+  .rec-item:last-child { border-bottom: none; }
+
+  .rec-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0; margin-top: 2px;
+    font-weight: 700;
+  }
+
+  .rec-icon.ok   { background: var(--green-pale); color: var(--green-mid); }
+  .rec-icon.warn { background: var(--orange-pale); color: var(--orange-mid); }
+  .rec-icon.bad  { background: var(--red-pale); color: var(--red-mid); }
+
+  .rec-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; color: var(--black); }
+  .rec-desc  { font-size: 13px; color: rgba(26,30,35,0.55); line-height: 1.5; }
+
+  /* ── CORS warning ───────────────────────────────────────────────────── */
+  .cors-warning {
+    background: var(--red-pale);
+    border: 1px solid #ffb5b5;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-top: 16px;
+  }
+
+  .cors-warning h3 { color: var(--red-mid); margin-bottom: 8px; font-size: 14px; }
+  .cors-warning p  { color: rgba(26,30,35,0.6); font-size: 13px; margin-bottom: 8px; }
+  .cors-warning ol { margin: 8px 0 0 20px; color: rgba(26,30,35,0.6); font-size: 13px; line-height: 2.2; }
+
+  code {
+    background: var(--fog);
+    border: 1px solid var(--smoke);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--black);
+  }
+
+  /* ── AI gradient accent ─────────────────────────────────────────────── */
+  .ai-gradient-text {
+    background: linear-gradient(90deg, var(--ai-start), var(--ai-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .ai-gradient-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--ai-start), var(--ai-mid), var(--ai-end));
+    border-radius: 2px;
+    margin-bottom: 18px;
+    width: 48px;
+  }
+
+  .empty-state {
+    text-align: center; padding: 28px;
+    color: rgba(26,30,35,0.35); font-size: 13px;
+  }
+
+  /* ── Spinner ────────────────────────────────────────────────────────── */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--rose);
+    border-top-color: var(--coral);
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-logo">
+    <!-- Gorgias symbol SVG -->
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="14" height="14" rx="2" stroke="white" stroke-width="1.6"/>
+      <rect x="7" y="7" width="7" height="7" rx="1.2" stroke="white" stroke-width="1.5"/>
+      <path d="M16 8h4a2 2 0 012 2v8a2 2 0 01-2 2H8a2 2 0 01-2-2v-4" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+    <span class="header-wordmark">gorgias<span class="header-product"> AI Agent Audit</span></span>
+  </div>
+  <span class="header-badge">V2 Brand</span>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>AI Agent Audit</h1>
+  <p>Audit your Gorgias account's AI Agent setup, rules, macros, and configuration health in one click.</p>
+</div>
+
+<div class="container">
+
+  <!-- Credentials -->
+  <div class="card">
+    <div class="card-title">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Credentials
+    </div>
+    <div class="form-grid">
+      <div>
+        <label>Gorgias Domain</label>
+        <div class="input-group">
+          <input type="text" id="domain" placeholder="yourcompany" autocomplete="off">
+          <span class="domain-suffix">.gorgias.com</span>
+        </div>
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@company.com" autocomplete="off">
+      </div>
+      <div>
+        <label>API Key</label>
+        <input type="password" id="apikey" placeholder="••••••••••••••••" autocomplete="off">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="runBtn" onclick="runAudit()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Run Audit
+      </button>
+      <span class="status-text" id="statusText"></span>
+    </div>
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div id="corsWarning"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <!-- Score -->
+    <div class="card" id="scoreCard">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+        AI Agent Health Score
+      </div>
+      <div class="ai-gradient-bar"></div>
+      <div class="score-wrap">
+        <div class="score-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="bg" cx="50" cy="50" r="43"/>
+            <circle class="fg" id="scoreCircle" cx="50" cy="50" r="43"/>
+          </svg>
+          <div class="score-center">
+            <span class="score-num" id="scoreNum">—</span>
+            <span class="score-of">/ 100</span>
+          </div>
+        </div>
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+      </div>
+    </div>
+
+    <!-- Account + AI Status -->
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          Account
+        </div>
+        <div id="accountContent" class="kv-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 015 5 5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5"/><path d="M12 14c-7 0-7 3-7 3v1h14v-1s0-3-7-3"/></svg>
+          AI Agent Status
+        </div>
+        <div id="aiStatusContent"></div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Team Overview
+      </div>
+      <div id="usersContent"></div>
+    </div>
+
+    <!-- Rules -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Rules Audit
+      </div>
+      <div id="rulesContent"></div>
+    </div>
+
+    <!-- Macros -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Macros Audit
+      </div>
+      <div id="macrosContent"></div>
+    </div>
+
+    <!-- Integrations -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        Integrations
+      </div>
+      <div id="integrationsContent"></div>
+    </div>
+
+    <!-- Tags -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Tags Analysis
+      </div>
+      <div id="tagsContent"></div>
+    </div>
+
+    <!-- Tickets -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Recent Tickets Sample
+      </div>
+      <div id="ticketsContent"></div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Recommendations
+      </div>
+      <div class="ai-gradient-bar"></div>
+      <div id="recsContent"></div>
+    </div>
+
+  </div><!-- /results -->
+</div>
+
+<script>
+// ─── Constants ────────────────────────────────────────────────────────────────
+const AI_KEYWORDS = ['ai', 'automat', 'bot', 'deflect', 'gorgias ai', 'agent', 'auto-reply',
+  'autoreply', 'auto reply', 'autopilot', 'self-service', 'selfservice'];
+const AI_TAG_WORDS = ['ai-handled', 'ai-deflected', 'bot', 'ai', 'automated', 'deflected',
+  'ai-resolved', 'chatbot', 'ai-answered', 'auto-resolved'];
+
+function isAIRelated(str = '') {
+  const s = str.toLowerCase();
+  return AI_KEYWORDS.some(k => s.includes(k));
+}
+function isAITag(str = '') {
+  const s = str.toLowerCase();
+  return AI_TAG_WORDS.some(t => s.includes(t)) || AI_KEYWORDS.some(k => s.includes(k));
+}
+
+let authHeader = '', baseUrl = '';
+
+function setProgress(pct, text) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('statusText').textContent = text;
+}
+
+async function apiFetch(path) {
+  const res = await fetch(baseUrl + path, {
+    headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }
+  });
+  if (!res.ok) {
+    const err = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status}: ${err.slice(0, 200)}`);
+  }
+  return res.json();
+}
+
+// ─── Run Audit ────────────────────────────────────────────────────────────────
+async function runAudit() {
+  const domain = document.getElementById('domain').value.trim().replace(/\.gorgias\.com.*/, '');
+  const email  = document.getElementById('email').value.trim();
+  const apikey = document.getElementById('apikey').value.trim();
+
+  if (!domain || !email || !apikey) { alert('Please fill in all three fields.'); return; }
+
+  baseUrl = `https://${domain}.gorgias.com/api`;
+  authHeader = 'Basic ' + btoa(`${email}:${apikey}`);
+
+  document.getElementById('corsWarning').innerHTML = '';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('progressWrap').style.display = 'block';
+  setProgress(0, 'Connecting…');
+
+  const collected = {};
+  const steps = [
+    { key: 'account',      path: '/account',                                          label: 'Account info'    },
+    { key: 'users',        path: '/users?limit=100',                                  label: 'Team members'    },
+    { key: 'rules',        path: '/rules?limit=100',                                  label: 'Automation rules'},
+    { key: 'macros',       path: '/macros?limit=100',                                 label: 'Macros'          },
+    { key: 'tags',         path: '/tags?limit=100',                                   label: 'Tags'            },
+    { key: 'integrations', path: '/integrations?limit=100',                           label: 'Integrations'    },
+    { key: 'tickets',      path: '/tickets?limit=50&order_by=created_datetime:desc',  label: 'Recent tickets'  },
+  ];
+
+  let done = 0;
+  for (const step of steps) {
+    setProgress(Math.round((done / steps.length) * 85), `Fetching ${step.label}…`);
+    try {
+      const raw = await apiFetch(step.path);
+      collected[step.key] = raw.data || raw.response?.data || (Array.isArray(raw) ? raw : raw);
+    } catch (e) {
+      const msg = e.message.toLowerCase();
+      if (msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('cors') || msg.includes('load')) {
+        showCorsError(domain);
+        document.getElementById('runBtn').disabled = false;
+        setProgress(0, '');
+        return;
+      }
+      collected[step.key] = { error: e.message };
+    }
+    done++;
+  }
+
+  setProgress(92, 'Building report…');
+  await new Promise(r => setTimeout(r, 150));
+  renderResults(collected);
+  setProgress(100, 'Audit complete');
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('runBtn').disabled = false;
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── CORS Error ───────────────────────────────────────────────────────────────
+function showCorsError(domain) {
+  document.getElementById('corsWarning').innerHTML = `
+    <div class="cors-warning">
+      <h3>Network / CORS Error</h3>
+      <p>Your browser blocked the request to <strong>${domain}.gorgias.com</strong>. This typically happens when opening the file directly (<code>file://</code>).</p>
+      <p><strong>How to fix:</strong></p>
+      <ol>
+        <li>Serve via a local server:<br><code>python3 -m http.server 8080</code> → open <code>http://localhost:8080/gorgias-audit.html</code></li>
+        <li>Install a browser extension like <strong>CORS Unblock</strong> or <strong>Allow CORS</strong> temporarily.</li>
+        <li>Use a CORS proxy: prepend <code>https://corsproxy.io/?</code> to the API base URL (testing only).</li>
+      </ol>
+    </div>
+  `;
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function toArr(val) {
+  if (Array.isArray(val)) return val;
+  if (val && Array.isArray(val.data)) return val.data;
+  return [];
+}
+
+function renderResults(d) {
+  const account      = d.account || {};
+  const users        = toArr(d.users);
+  const rules        = toArr(d.rules);
+  const macros       = toArr(d.macros);
+  const tags         = toArr(d.tags);
+  const integrations = toArr(d.integrations);
+  const tickets      = toArr(d.tickets);
+
+  renderAccount(account);
+  renderAIStatus(account, integrations, rules);
+  renderUsers(users);
+  renderRules(rules);
+  renderMacros(macros);
+  renderIntegrations(integrations);
+  renderTags(tags, tickets);
+  renderTickets(tickets);
+  const score = renderRecommendations(account, users, rules, macros, integrations, tags, tickets);
+  renderScore(score);
+}
+
+function badge(text, type) {
+  return `<span class="badge ${type}">${text}</span>`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Account
+function renderAccount(acc) {
+  if (acc.error) {
+    document.getElementById('accountContent').innerHTML = `<p style="color:var(--red-mid);font-size:13px">${escHtml(acc.error)}</p>`;
+    return;
+  }
+  const rows = [
+    { k: 'Account Name',   v: acc.name || '—' },
+    { k: 'Domain',         v: acc.domain || '—' },
+    { k: 'Plan',           v: acc.plan || acc.subscription_plan || '—' },
+    { k: 'Support Email',  v: acc.support_email || acc.email || '—' },
+    { k: 'Timezone',       v: acc.timezone || '—' },
+  ];
+  document.getElementById('accountContent').innerHTML =
+    rows.map(r => `<div class="kv-row"><span class="kv-key">${r.k}</span><span class="kv-val">${escHtml(r.v)}</span></div>`).join('');
+}
+
+// AI Status
+function renderAIStatus(acc, integrations, rules) {
+  const aiInts  = integrations.filter(i => isAIRelated(i.name || '') || isAIRelated(i.type || '') || isAIRelated(JSON.stringify(i)));
+  const aiRules = rules.filter(r => isAIRelated(r.name || '') || isAIRelated(JSON.stringify(r.conditions || [])));
+  const features = acc.features || acc.settings?.features || {};
+  const featureKeys = Object.keys(features).filter(k => isAIRelated(k));
+  const channels = [...new Set(aiInts.flatMap(i => i.channel ? [i.channel] : []))];
+  const isEnabled = aiInts.length > 0 || aiRules.length > 0 || featureKeys.length > 0;
+
+  document.getElementById('aiStatusContent').innerHTML = `
+    <div style="margin-bottom:14px">
+      ${isEnabled
+        ? `<span class="badge success">✓ Likely Configured</span>`
+        : `<span class="badge warning">⚠ Not Detected</span>`}
+    </div>
+    <div class="kv-list">
+      <div class="kv-row"><span class="kv-key">AI Integrations</span><span class="kv-val">${aiInts.length}</span></div>
+      <div class="kv-row"><span class="kv-key">AI-Related Rules</span><span class="kv-val">${aiRules.length}</span></div>
+      <div class="kv-row"><span class="kv-key">AI Feature Flags</span><span class="kv-val">${featureKeys.length > 0 ? escHtml(featureKeys.join(', ')) : '—'}</span></div>
+      <div class="kv-row"><span class="kv-key">Detected Channels</span><span class="kv-val">${channels.length > 0 ? escHtml(channels.join(', ')) : '—'}</span></div>
+    </div>
+    ${!isEnabled ? `<p style="margin-top:12px;font-size:13px;color:rgba(26,30,35,0.45)">No clear AI Agent signals detected. AI Agent may not be active, or may use naming conventions not matched by this audit.</p>` : ''}
+  `;
+}
+
+// Users
+function renderUsers(users) {
+  if (!users.length) {
+    document.getElementById('usersContent').innerHTML = '<div class="empty-state">No user data available.</div>';
+    return;
+  }
+  const roles = {};
+  users.forEach(u => { const r = u.role || 'unknown'; roles[r] = (roles[r] || 0) + 1; });
+  const active = users.filter(u => u.active !== false).length;
+
+  document.getElementById('usersContent').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box"><span class="stat-val">${users.length}</span><div class="stat-label">Total Users</div></div>
+      <div class="stat-box"><span class="stat-val">${active}</span><div class="stat-label">Active</div></div>
+      ${Object.entries(roles).map(([r,c]) => `<div class="stat-box"><span class="stat-val">${c}</span><div class="stat-label">${escHtml(r)}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+// Rules
+function renderRules(rules) {
+  if (!rules.length) {
+    document.getElementById('rulesContent').innerHTML = '<div class="empty-state">No rules found or access denied.</div>';
+    return;
+  }
+  const aiRules     = rules.filter(r => isAIRelated(r.name || '') || isAIRelated(JSON.stringify(r.conditions || [])) || isAIRelated(JSON.stringify(r.actions || [])));
+  const activeRules = rules.filter(r => r.enabled !== false);
+
+  let html = `<div class="section-meta">
+    ${badge(rules.length + ' total', 'neutral')}
+    ${badge(activeRules.length + ' active', 'info')}
+    ${badge(aiRules.length + ' AI-related', aiRules.length > 0 ? 'ai' : 'warning')}
+  </div>`;
+
+  if (aiRules.length > 0) {
+    html += `<p style="font-size:12px;color:rgba(26,30,35,0.45);margin-bottom:10px;font-weight:500;text-transform:uppercase;letter-spacing:.4px">AI-related rules</p>
+    <table>
+      <thead><tr><th>Rule Name</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>`;
+    aiRules.slice(0, 20).forEach(r => {
+      const actions = (r.actions || []).map(a => a.type || a.name || '').filter(Boolean).join(', ');
+      html += `<tr class="hl">
+        <td style="font-weight:500">${escHtml(r.name || '(unnamed)')}</td>
+        <td>${r.enabled !== false ? badge('Active','success') : badge('Inactive','neutral')}</td>
+        <td style="color:rgba(26,30,35,0.45);font-size:12px">${escHtml((actions || '—').slice(0,80))}</td>
+      </tr>`;
+    });
+    html += '</tbody></table><div class="divider"></div>';
+  }
+
+  html += `<p style="font-size:12px;color:rgba(26,30,35,0.45);margin-bottom:8px;font-weight:500;text-transform:uppercase;letter-spacing:.4px">All rules</p>
+  <table><thead><tr><th>Name</th><th>Status</th></tr></thead><tbody>`;
+  rules.slice(0, 20).forEach(r => {
+    html += `<tr>
+      <td>${escHtml(r.name || '(unnamed)')}</td>
+      <td>${r.enabled !== false ? badge('Active','success') : badge('Inactive','neutral')}</td>
+    </tr>`;
+  });
+  if (rules.length > 20) html += `<tr><td colspan="2" style="color:rgba(26,30,35,0.4);font-size:12px">…and ${rules.length - 20} more</td></tr>`;
+  html += '</tbody></table>';
+
+  document.getElementById('rulesContent').innerHTML = html;
+}
+
+// Macros
+function renderMacros(macros) {
+  if (!macros.length) {
+    document.getElementById('macrosContent').innerHTML = '<div class="empty-state">No macros found or access denied.</div>';
+    return;
+  }
+  const aiMacros = macros.filter(m => isAIRelated(m.name || '') || m.actions?.some(a => isAIRelated(JSON.stringify(a))));
+
+  let html = `<div class="section-meta">
+    ${badge(macros.length + ' total', 'neutral')}
+    ${badge(aiMacros.length + ' AI-related', aiMacros.length > 0 ? 'ai' : 'warning')}
+  </div>
+  <table><thead><tr><th>Macro Name</th><th>AI-Related</th><th>Actions</th></tr></thead><tbody>`;
+
+  macros.slice(0, 25).forEach(m => {
+    const isAI = isAIRelated(m.name || '') || m.actions?.some(a => isAIRelated(JSON.stringify(a)));
+    html += `<tr ${isAI ? 'class="hl"' : ''}>
+      <td style="font-weight:${isAI?'500':'400'}">${escHtml(m.name || '(unnamed)')}</td>
+      <td>${isAI ? badge('AI','ai') : ''}</td>
+      <td style="color:rgba(26,30,35,0.45)">${(m.actions || []).length}</td>
+    </tr>`;
+  });
+  if (macros.length > 25) html += `<tr><td colspan="3" style="color:rgba(26,30,35,0.4);font-size:12px">…and ${macros.length - 25} more</td></tr>`;
+  html += '</tbody></table>';
+
+  document.getElementById('macrosContent').innerHTML = html;
+}
+
+// Integrations
+function renderIntegrations(integrations) {
+  if (!integrations.length) {
+    document.getElementById('integrationsContent').innerHTML = '<div class="empty-state">No integrations found or access denied.</div>';
+    return;
+  }
+  const aiInts = integrations.filter(i => isAIRelated(i.name || '') || isAIRelated(i.type || ''));
+
+  let html = `<div class="section-meta">
+    ${badge(integrations.length + ' total', 'neutral')}
+    ${badge(aiInts.length + ' AI/bot', aiInts.length > 0 ? 'ai' : 'warning')}
+  </div>
+  <table><thead><tr><th>Name</th><th>Type</th><th>AI</th><th>Status</th></tr></thead><tbody>`;
+
+  integrations.slice(0, 30).forEach(i => {
+    const isAI = isAIRelated(i.name || '') || isAIRelated(i.type || '');
+    html += `<tr ${isAI ? 'class="hl"' : ''}>
+      <td style="font-weight:${isAI?'500':'400'}">${escHtml(i.name || i.id || '—')}</td>
+      <td style="color:rgba(26,30,35,0.45);font-size:12px">${escHtml(i.type || '—')}</td>
+      <td>${isAI ? badge('AI','ai') : ''}</td>
+      <td>${i.active !== false ? badge('Active','success') : badge('Inactive','neutral')}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+
+  document.getElementById('integrationsContent').innerHTML = html;
+}
+
+// Tags
+function renderTags(tags, tickets) {
+  const allTagNames = new Set();
+  tags.forEach(t => allTagNames.add((t.name || t).toLowerCase()));
+  tickets.forEach(t => (t.tags || []).forEach(tg => allTagNames.add((tg.name || tg).toLowerCase())));
+
+  const aiTagsFound = [...allTagNames].filter(t => isAITag(t));
+  const otherTags   = [...allTagNames].filter(t => !isAITag(t)).slice(0, 40);
+
+  let html = `<div class="section-meta">
+    ${badge(allTagNames.size + ' unique tags', 'neutral')}
+    ${badge(aiTagsFound.length + ' AI-related', aiTagsFound.length > 0 ? 'ai' : 'warning')}
+  </div>`;
+
+  if (aiTagsFound.length > 0) {
+    html += `<p style="font-size:12px;color:rgba(26,30,35,0.45);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">AI / automation tags</p>`;
+    html += aiTagsFound.map(t => `<span class="tag-pill ai-tag">${escHtml(t)}</span>`).join('');
+    html += '<div class="divider"></div>';
+  } else {
+    html += `<p style="color:var(--orange-mid);font-size:13px;margin-bottom:12px">No AI-related tags found. Consider adding: <span class="tag-pill ai-tag">ai-handled</span> <span class="tag-pill ai-tag">ai-deflected</span> <span class="tag-pill ai-tag">bot</span></p>`;
+  }
+
+  if (otherTags.length > 0) {
+    html += `<p style="font-size:12px;color:rgba(26,30,35,0.45);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.4px">Other tags</p>`;
+    html += otherTags.map(t => `<span class="tag-pill">${escHtml(t)}</span>`).join('');
+  }
+
+  document.getElementById('tagsContent').innerHTML = html;
+}
+
+// Tickets
+function renderTickets(tickets) {
+  if (!tickets.length) {
+    document.getElementById('ticketsContent').innerHTML = '<div class="empty-state">No recent ticket data available.</div>';
+    return;
+  }
+  const withAI = tickets.filter(t => (t.tags || []).some(tg => isAITag(tg.name || tg || '')));
+
+  let html = `<div class="section-meta">
+    ${badge(tickets.length + ' sampled', 'neutral')}
+    ${badge(withAI.length + ' with AI tags', withAI.length > 0 ? 'ai' : 'warning')}
+  </div>
+  <table><thead><tr><th>#</th><th>Subject</th><th>Status</th><th>Channel</th><th>Tags</th></tr></thead><tbody>`;
+
+  tickets.slice(0, 15).forEach(t => {
+    const ticketTags = (t.tags || []).map(tg => tg.name || tg);
+    const hasAI = ticketTags.some(tg => isAITag(tg));
+    html += `<tr ${hasAI ? 'class="hl"' : ''}>
+      <td style="color:rgba(26,30,35,0.4);font-size:12px">#${t.id || '—'}</td>
+      <td style="font-weight:${hasAI?'500':'400'}">${escHtml((t.subject || '(no subject)').slice(0, 60))}</td>
+      <td>${badge(t.status || '—', t.status === 'closed' ? 'neutral' : t.status === 'open' ? 'info' : 'neutral')}</td>
+      <td style="color:rgba(26,30,35,0.45);font-size:12px">${escHtml(t.channel || '—')}</td>
+      <td>${ticketTags.slice(0,3).map(tg => `<span class="tag-pill ${isAITag(tg)?'ai-tag':''}">${escHtml(tg)}</span>`).join('')}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+
+  document.getElementById('ticketsContent').innerHTML = html;
+}
+
+// Recommendations + Score
+function renderRecommendations(account, users, rules, macros, integrations, tags, tickets) {
+  const recs = [];
+  let score = 0;
+  const breakdown = [];
+
+  const aiInts = integrations.filter(i => isAIRelated(i.name || '') || isAIRelated(i.type || ''));
+  if (aiInts.length > 0) {
+    recs.push({ type:'ok',   title:'AI Integration Connected',    desc:`${aiInts.length} AI/bot integration(s): ${aiInts.map(i=>i.name||i.type).slice(0,3).join(', ')}` });
+    score += 20; breakdown.push({ label:'AI Integration', pts:20 });
+  } else {
+    recs.push({ type:'bad',  title:'No AI Integration Detected',  desc:'Connect an AI integration (e.g. Gorgias AI Agent) to automate ticket deflection.' });
+    breakdown.push({ label:'AI Integration', pts:0 });
+  }
+
+  const aiRules = rules.filter(r => isAIRelated(r.name || '') || isAIRelated(JSON.stringify(r.conditions || [])));
+  if (aiRules.length >= 3) {
+    recs.push({ type:'ok',   title:'AI Automation Rules Present', desc:`${aiRules.length} rules with AI-related names or conditions found.` });
+    score += 20; breakdown.push({ label:'AI Rules', pts:20 });
+  } else if (aiRules.length > 0) {
+    recs.push({ type:'warn', title:'Few AI Automation Rules',     desc:`Only ${aiRules.length} AI-related rule(s). Add rules for routing, tagging, and auto-closing.` });
+    score += 10; breakdown.push({ label:'AI Rules', pts:10 });
+  } else {
+    recs.push({ type:'bad',  title:'No AI Automation Rules',      desc:'Create rules to route AI-handled tickets, auto-tag them, and manage escalation flows.' });
+    breakdown.push({ label:'AI Rules', pts:0 });
+  }
+
+  const allTagNames = new Set();
+  tags.forEach(t => allTagNames.add((t.name || t).toLowerCase()));
+  tickets.forEach(t => (t.tags || []).forEach(tg => allTagNames.add((tg.name || tg).toLowerCase())));
+  const aiTagsFound = [...allTagNames].filter(t => isAITag(t));
+
+  if (aiTagsFound.length >= 2) {
+    recs.push({ type:'ok',   title:'AI Tracking Tags in Use',     desc:`Tags found: ${aiTagsFound.slice(0,5).join(', ')}` });
+    score += 15; breakdown.push({ label:'AI Tags', pts:15 });
+  } else if (aiTagsFound.length === 1) {
+    recs.push({ type:'warn', title:'Limited AI Tagging',          desc:`Only 1 AI tag (${aiTagsFound[0]}). Add "ai-handled", "ai-deflected", "bot" to track performance.` });
+    score += 8; breakdown.push({ label:'AI Tags', pts:8 });
+  } else {
+    recs.push({ type:'bad',  title:'No AI Tracking Tags',         desc:'Add tags like "ai-handled", "ai-deflected", "bot-resolved" to measure deflection rates.' });
+    breakdown.push({ label:'AI Tags', pts:0 });
+  }
+
+  const aiMacros = macros.filter(m => isAIRelated(m.name || ''));
+  if (aiMacros.length >= 2) {
+    recs.push({ type:'ok',   title:'AI-Accessible Macros Set Up', desc:`${aiMacros.length} macros with AI-related names found.` });
+    score += 15; breakdown.push({ label:'AI Macros', pts:15 });
+  } else if (aiMacros.length === 1) {
+    recs.push({ type:'warn', title:'Limited AI Macros',           desc:'1 AI macro found. Build a library for FAQs, order status, returns.' });
+    score += 8; breakdown.push({ label:'AI Macros', pts:8 });
+  } else {
+    recs.push({ type:'bad',  title:'No AI-Named Macros',          desc:'Create macros for AI to use on common topics (e.g. "AI – Shipping FAQ", "AI – Return Policy").' });
+    breakdown.push({ label:'AI Macros', pts:0 });
+  }
+
+  const ticketsWithAI = tickets.filter(t => (t.tags || []).some(tg => isAITag(tg.name || tg || '')));
+  const aiPct = tickets.length > 0 ? Math.round((ticketsWithAI.length / tickets.length) * 100) : 0;
+  if (aiPct >= 10) {
+    recs.push({ type:'ok',   title:'AI Activity Visible in Tickets', desc:`${aiPct}% of sampled recent tickets have AI-related tags.` });
+    score += 15; breakdown.push({ label:'AI Activity', pts:15 });
+  } else if (aiPct > 0) {
+    recs.push({ type:'warn', title:'Low AI Activity in Tickets',      desc:`${aiPct}% of sampled tickets show AI tags. AI may not be handling many tickets yet.` });
+    score += 7; breakdown.push({ label:'AI Activity', pts:7 });
+  } else {
+    recs.push({ type:'warn', title:'No AI Activity in Recent Tickets', desc:'None of the 50 sampled recent tickets have AI-related tags. AI Agent may not be active.' });
+    breakdown.push({ label:'AI Activity', pts:0 });
+  }
+
+  if (rules.length >= 10) {
+    recs.push({ type:'ok',   title:'Robust Rules Library', desc:`${rules.length} total rules — good foundation for automation.` });
+    score += 10; breakdown.push({ label:'Rules Coverage', pts:10 });
+  } else if (rules.length > 0) {
+    recs.push({ type:'warn', title:'Small Rules Library',  desc:`Only ${rules.length} rules. Expand to cover AI routing, escalation, SLAs, and tagging.` });
+    score += 5; breakdown.push({ label:'Rules Coverage', pts:5 });
+  }
+
+  const agents = users.filter(u => u.role === 'agent' || u.role === 'support').length;
+  if (agents > 0) {
+    recs.push({ type:'ok', title:`${agents} Support Agent(s) on Team`, desc:'Team is set up to handle escalations from AI Agent.' });
+    score += 5; breakdown.push({ label:'Team Setup', pts:5 });
+  }
+
+  const icons = { ok:'✓', warn:'!', bad:'✕' };
+  document.getElementById('recsContent').innerHTML = recs.map(r => `
+    <div class="rec-item">
+      <div class="rec-icon ${r.type}">${icons[r.type]}</div>
+      <div>
+        <div class="rec-title">${r.title}</div>
+        <div class="rec-desc">${r.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  return { score: Math.min(score, 100), breakdown };
+}
+
+function renderScore({ score, breakdown }) {
+  document.getElementById('scoreNum').textContent = score;
+
+  const r = 43;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (score / 100) * circ;
+  const fg = document.getElementById('scoreCircle');
+  fg.style.strokeDasharray = circ;
+  fg.style.strokeDashoffset = circ;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => { fg.style.strokeDashoffset = offset; });
+  });
+
+  // Color by score
+  const color = score >= 70 ? 'var(--green-mid)' : score >= 40 ? 'var(--orange-mid)' : 'var(--red-mid)';
+  fg.style.stroke = score >= 70 ? '#289E43' : score >= 40 ? '#CD721D' : '#C54040';
+
+  document.getElementById('scoreBreakdown').innerHTML = breakdown.map(b => `
+    <div class="score-row">
+      <span>${b.label}</span>
+      <span class="score-pts ${b.pts > 0 ? 'earned' : 'zero'}">${b.pts > 0 ? '+' + b.pts : '—'}</span>
+    </div>
+  `).join('');
+}
+
+// Enter key triggers audit
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('runBtn').disabled) runAudit();
+});
+</script>
+</body>
+</html>
